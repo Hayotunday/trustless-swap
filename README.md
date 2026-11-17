@@ -78,8 +78,8 @@ should be zero. Amounts are specified in the ERC-20's smallest units.
 - `test/TrustlessSwap.t.sol` — unit, integration, and fuzz tests.
 - `test/TrustlessSwapInvariant.t.sol` — stateful invariant tests for escrow
   and payment consistency.
-- `script/TrustlessSwap.s.sol` — deployment script scaffold; deployment
-  actions are not currently implemented.
+- `script/TrustlessSwap.s.sol` — Sepolia-default deployment script with a
+  configurable chain-ID guard.
 - `foundry.toml` — Foundry project configuration.
 
 ## Development
@@ -96,6 +96,42 @@ Build the contracts:
 
 ```sh
 forge build
+```
+
+### Deploy to Sepolia
+
+Import the private key for a test-only burner wallet into Foundry's encrypted
+keystore. Run this command in a trusted local terminal; do not paste the key
+into a command, source file, or chat:
+
+```sh
+cast wallet import sepolia-deployer --interactive
+```
+
+Fund that wallet with Sepolia ETH from a faucet, then set an RPC URL from your
+provider:
+
+```sh
+export SEPOLIA_RPC_URL="https://your-sepolia-rpc-url"
+```
+
+Deploy using the keystore account. The script defaults to Sepolia (chain ID
+`11155111`) and makes the deployer the contract owner:
+
+```sh
+forge script script/TrustlessSwap.s.sol:TrustlessSwapScript \
+  --rpc-url "$SEPOLIA_RPC_URL" \
+  --account sepolia-deployer \
+  --broadcast
+```
+
+For a different chain, set `EXPECTED_CHAIN_ID` to its chain ID before running
+the script. Confirm the deployment address in Forge's output and check that
+the deployer is the owner:
+
+```sh
+cast call <DEPLOYED_ADDRESS> "owner()(address)" \
+  --rpc-url "$SEPOLIA_RPC_URL"
 ```
 
 Run unit, integration, fuzz, and invariant tests:
