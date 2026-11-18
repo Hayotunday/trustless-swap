@@ -170,3 +170,24 @@ responseNftAddress, responseTokenAddress, responseTokenAmount)` — create an
 
 Refer to [`src/TrustlessSwap.sol`](src/TrustlessSwap.sol) for the Solidity
 types, events, and custom errors.
+
+## Web app
+
+The repository also includes a Next.js wallet frontend. Install its dependencies
+with `pnpm install`, copy `.env.example` to `.env.local`, set the deployed
+contract address, chain ID, and deployment block, then run `pnpm dev`. The
+frontend discovers offers from `OfferCreated` logs in bounded block ranges and
+reads each offer from the contract; it does not include mock listings.
+
+Required public configuration:
+
+- `NEXT_PUBLIC_SWAP_CONTRACT_ADDRESS` — deployed TrustlessSwap address.
+- `NEXT_PUBLIC_CHAIN_ID` — the deployment chain ID.
+- `NEXT_PUBLIC_DEPLOYMENT_BLOCK` — first block to scan for offer events.
+
+Supported networks have a public RPC default. Set `NEXT_PUBLIC_RPC_URL` for
+custom networks. `NEXT_PUBLIC_CHAIN_NAME` and `NEXT_PUBLIC_EXPLORER_URL` can
+customize the network label and transaction links. Public RPC and explorer URLs
+are browser-visible; never place private keys or secrets in `NEXT_PUBLIC_*`
+variables. Without a complete deployment configuration, the app displays a
+contract-not-configured state and disables all transaction actions.
